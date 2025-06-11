@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destinations - Safar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base Styles (Reused from Home) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo-container { display: flex; align-items: center; gap: 10px; }
+        .logo-img { height: 50px; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)); }
+        .site-name { font-size: 28px; font-weight: 700; color: white; }
+        .nav { display: flex; gap: 20px; }
+        .nav a {
+            text-decoration: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .nav a:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-3px); }
+        .nav a.active { background: #FF6B6B; }
+
+        /* Hero Section with Animated Globe */
+        .destinations-hero {
+            height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 10%;
+            background: url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800') no-repeat center center;
+            background-size: cover;
+            position: relative;
+            color: white;
+            margin-top: 80px;
+        }
+        .destinations-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .destinations-hero-content { 
+            z-index: 1;
+            animation: fadeInUp 1s ease-out;
+        }
+        .destinations-hero h1 { 
+            font-size: 3.5rem; 
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        .destinations-hero p { 
+            font-size: 1.2rem; 
+            max-width: 700px; 
+            margin: 0 auto 30px;
+        }
+        .globe-icon {
+            font-size: 3rem;
+            margin-top: 20px;
+            animation: float 6s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        .profile-icon {
+            font-size: 20px;
+            color: white;}
+
+        /* Destinations Grid - AR/VR Focus */
+        .destinations-grid {
+            padding: 80px 5%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+        }
+        .destination-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        .destination-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        }
+        .card-image {
+            height: 250px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+        .destination-card:hover .card-image {
+            transform: scale(1.05);
+        }
+        .card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 20px;
+            color: white;
+        }
+        .card-overlay h3 { 
+            font-size: 1.8rem; 
+            margin-bottom: 10px;
+        }
+        .card-overlay p { 
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        .tech-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .ar-badge {
+            background: #FF6B6B;
+            color: white;
+        }
+        .vr-badge {
+            background: #4b6cb7;
+            color: white;
+        }
+        .experience-buttons {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 0 20px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .destination-card:hover .experience-buttons {
+            opacity: 1;
+        }
+        .ar-btn, .vr-btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            color: white;
+            text-align: center;
+            flex: 1;
+            max-width: 120px;
+        }
+        .ar-btn {
+            background: #FF6B6B;
+        }
+        .vr-btn {
+            background: #4b6cb7;
+        }
+        .ar-btn:hover, .vr-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(90deg, #182848 0%, #4b6cb7 100%);
+            color: white;
+            padding: 50px 10% 20px;
+            text-align: center;
+        }
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .social-icons a {
+            color: white;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .social-icons a:hover { 
+            transform: translateY(-5px); 
+            color: #FF6B6B;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .destinations-hero { 
+                height: 50vh; 
+                margin-top: 70px;
+            }
+            .destinations-hero h1 { 
+                font-size: 2.5rem; 
+            }
+            .destinations-grid { 
+                grid-template-columns: 1fr; 
+                padding: 40px 5%; 
+                gap: 30px;
+            }
+            .experience-buttons {
+                opacity: 1; /* Always show on mobile */
+            }
+        }
+
+        #bgVideo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  opacity: 0.75; /* Adjust opacity as needed */
+}
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='safar-logo.png') }}" class="logo-img">
+            <span class="site-name">Safar</span>
+        </div>
+        <nav class="nav">
+            <!-- Home -->
+            <a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a>
+        
+            <!-- Destinations (logged-in vs logged-out) -->
+            <a href="{% if session.get('email') %}{{ url_for('destinationstwo') }}{% else %}{{ url_for('destinations') }}{% endif %}" 
+               class="{% if request.endpoint in ['destinations', 'destinationstwo'] %}active{% endif %}">
+                Destinations
+            </a>
+        
+            <!-- About -->
+            <a href="{{ url_for('about') }}" class="{% if request.endpoint == 'about' %}active{% endif %}">About</a>
+        
+            <!-- Login or Profile Icon -->
+            {% if session.get('email') %}
+                <a href="{{ url_for('profile') }}" class="{% if request.endpoint == 'profile' %}active{% endif %}" title="Profile">
+                    <i class="fas fa-user-circle profile-icon"></i>
+                </a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="{% if request.endpoint == 'login' %}active{% endif %}">Login</a>
+            {% endif %}
+        </nav>
+        
+    </header>
+
+
+
+    <!-- Destinations Hero -->
+    <section class="destinations-hero">
+        <div class="destinations-hero-content">
+            <h1>Your AR/VR Journey Begins</h1>
+            <p>Explore world wonders through immersive augmented and virtual reality experiences</p>
+            <div class="globe-icon">
+                <i class="fas fa-vr-cardboard"></i>
+                <i class="fas fa-mobile-alt" style="margin: 0 15px;"></i>
+                <i class="fas fa-globe-americas"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Destinations Grid -->
+    <div class="destinations-grid">
+        <!-- Taj Mahal -->
+        <div class="destination-card">
+            <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1564507592333-c60657eea523');">
+                <span class="tech-badge ar-badge">AR Available</span>
+                <span class="tech-badge vr-badge" style="right: 140px;">VR Available</span>
+                <div class="card-overlay">
+                    <h3>Taj Mahal</h3>
+                    <p>Agra, India - UNESCO World Heritage Site</p>
+                </div>
+                <div class="experience-buttons">
+                    <a href="/tajmahal_ar">
+                        <button class="ar-btn">
+                            <i class="fas fa-mobile-alt"></i> AR
+                        </button>
+                    </a>
+                    <a href="/tajmahal_vr">
+                        <button class="vr-btn">
+                            <i class="fas fa-vr-cardboard"></i> VR
+                        </button>
+                    </a>
+                </div>                
+            </div>
+        </div>
+
+        <!-- Ellora Caves -->
+        <div class="destination-card">
+            <div class="card-image" style="background-image: url('static/ellora.jpg');">
+                <span class="tech-badge ar-badge">AR Available</span>
+                <span class="tech-badge vr-badge" style="right: 140px;">VR Available</span>
+                <div class="card-overlay">
+                    <h3>Ellora Caves</h3>
+                    <p>Maharashtra, India - Rock-cut Temple Complex</p>
+                </div>
+                <div class="experience-buttons">
+                    <a href="/ellora_ar">
+                        <button class="ar-btn">
+                            <i class="fas fa-mobile-alt"></i> AR
+                        </button>
+                    </a>
+                    <a href="/ellora_vr">
+                        <button class="vr-btn">
+                            <i class="fas fa-vr-cardboard"></i> VR
+                        </button>
+                    </a>
+                </div> 
+            </div>
+        </div>
+
+        <!-- Statue of Liberty -->
+        <div class="destination-card">
+            <div class="card-image" style="background-image: url('static/statue.jpg');">
+                <span class="tech-badge ar-badge">AR Available</span>
+                <span class="tech-badge vr-badge" style="right: 140px;">VR Available</span>
+                <div class="card-overlay">
+                    <h3>Statue of Liberty</h3>
+                    <p>New York, USA - Iconic Symbol of Freedom</p>
+                </div>
+                <div class="experience-buttons">
+                    <a href="/liberty_ar">
+                        <button class="ar-btn">
+                            <i class="fas fa-mobile-alt"></i> AR
+                        </button>
+                    </a>
+                    <a href="/liberty_vr">
+                        <button class="vr-btn">
+                            <i class="fas fa-vr-cardboard"></i> VR
+                        </button>
+                    </a>
+                </div> 
+            </div>
+        </div>
+
+        <!-- Angkor Wat -->
+        <div class="destination-card">
+            <div class="card-image" style="background-image: url('static/angkor.png');">
+                <span class="tech-badge ar-badge">AR Available</span>
+                <span class="tech-badge vr-badge" style="right: 140px;">VR Available</span>
+                <div class="card-overlay">
+                    <h3>Angkor Wat</h3>
+                    <p>Cambodia - Largest Religious Monument</p>
+                </div>
+                <div class="experience-buttons">
+                    <a href="/angkor_ar">
+                        <button class="ar-btn">
+                            <i class="fas fa-mobile-alt"></i> AR
+                        </button>
+                    </a>
+                    <a href="/angkor_vr">
+                        <button class="vr-btn">
+                            <i class="fas fa-vr-cardboard"></i> VR
+                        </button>
+                    </a>
+                </div> 
+            </div>
+        </div>
+
+        <!-- The Charterhouse Chapel -->
+        <div class="destination-card">
+            <div class="card-image" style="background-image: url('static/Colosseum.png');">
+                <span class="tech-badge ar-badge">AR Available</span>
+                <span class="tech-badge vr-badge" style="right: 140px;">VR Available</span>
+                <div class="card-overlay">
+                    <h3>Colosseum</h3>
+                    <p>Rome - Flavian Amphitheatre</p>
+                </div>
+                <div class="experience-buttons">
+                    <a href="/colosseum_ar">
+                        <button class="ar-btn">
+                            <i class="fas fa-mobile-alt"></i> AR
+                        </button>
+                    </a>
+                    <a href="/colosseum_vr">
+                        <button class="vr-btn">
+                            <i class="fas fa-vr-cardboard"></i> VR
+                        </button>
+                    </a>
+                </div> 
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+        <p>© 2025 Safar - AR/VR Travel Experiences. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // Optional: Add animation to buttons on hover
+        document.querySelectorAll('.ar-btn, .vr-btn').forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px)';
+                this.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
+            });
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2)';
+            });
+        });
+    </script>
+</body>
+</html>

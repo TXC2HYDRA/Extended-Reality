@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angkor Wat VR Experience - Safar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo-container { display: flex; align-items: center; gap: 10px; }
+        .logo-img { height: 50px; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)); }
+        .site-name { font-size: 28px; font-weight: 700; color: white; }
+        .nav { display: flex; gap: 20px; }
+        .nav a {
+            text-decoration: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .nav a:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-3px); }
+        .nav a.active { background: #FF6B6B; }
+
+        .vr-container {
+            padding: 120px 5% 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .vr-header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        .vr-header h1 {
+            font-size: 2.5rem;
+            color: #182848;
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .vr-header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: #FF6B6B;
+            border-radius: 2px;
+        }
+        
+        .vr-header p {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        /* Enhanced VR Launch Section */
+        .vr-launch-section {
+            background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .vr-launch-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('angkor-vr-bg.jpg') center/cover;
+            opacity: 0.15;
+            z-index: 0;
+        }
+        
+        .vr-launch-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .vr-instructions h2 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+        
+        .vr-instructions p {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.8;
+            margin-bottom: 30px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .vr-button {
+            background: white;
+            color: #182848;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.3rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .vr-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        .vr-button i {
+            font-size: 1.8rem;
+        }
+        
+        .vr-device-support {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .vr-device {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .vr-device i {
+            color: #FF6B6B;
+        }
+        
+        .info-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-section h2 {
+            color: #182848;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .info-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: #FF6B6B;
+            border-radius: 2px;
+        }
+        
+        .angkor-image {
+            width: 100%;
+            height: 250px;
+            border-radius: 15px;
+            object-fit: cover;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-content p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .info-highlights {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .info-highlights h3 {
+            color: #182848;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .info-highlights ul {
+            list-style-type: none;
+        }
+        
+        .info-highlights li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-highlights li:last-child {
+            border-bottom: none;
+        }
+        
+        .info-highlights i {
+            color: #FF6B6B;
+        }
+        
+        .vr-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #4b6cb7;
+            margin-bottom: 15px;
+        }
+        
+        .feature-card h3 {
+            color: #182848;
+            margin-bottom: 10px;
+        }
+        
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .footer {
+            background: linear-gradient(90deg, #182848 0%, #4b6cb7 100%);
+            color: white;
+            padding: 50px 10% 20px;
+            text-align: center;
+            margin-top: 50px;
+        }
+        
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .social-icons a {
+            color: white;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .social-icons a:hover { 
+            transform: translateY(-5px); 
+            color: #FF6B6B;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .vr-header h1 {
+                font-size: 2rem;
+            }
+            
+            .vr-button {
+                padding: 15px 30px;
+                font-size: 1.1rem;
+            }
+            
+            .vr-instructions h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        #bgVideo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  opacity: 0.75; /* Adjust opacity as needed */
+}
+
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='safar-logo.png') }}" class="logo-img">
+            <span class="site-name">Safar</span>
+        </div>
+        <nav class="nav">
+            <!-- Home -->
+            <a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a>
+        
+            <!-- Destinations (logged-in vs logged-out) -->
+            <a href="{% if session.get('email') %}{{ url_for('destinationstwo') }}{% else %}{{ url_for('destinations') }}{% endif %}" 
+               class="{% if request.endpoint in ['destinations', 'destinationstwo'] %}active{% endif %}">
+                Destinations
+            </a>
+        
+            <!-- About -->
+            <a href="{{ url_for('about') }}" class="{% if request.endpoint == 'about' %}active{% endif %}">About</a>
+        
+            <!-- Login or Profile Icon -->
+            {% if session.get('email') %}
+                <a href="{{ url_for('profile') }}" class="{% if request.endpoint == 'profile' %}active{% endif %}" title="Profile">
+                    <i class="fas fa-user-circle profile-icon"></i>
+                </a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="{% if request.endpoint == 'login' %}active{% endif %}">Login</a>
+            {% endif %}
+        </nav>
+        
+    </header>
+
+    <video autoplay muted loop id="bgVideo">
+        <source src="{{ url_for('static', filename='Videos/Angkor Wat.mp4') }}" type="video/mp4">
+        Your browser does not support HTML5 video.
+      </video>
+
+    <div class="vr-container">
+        <div class="vr-header">
+            <h1>Angkor Wat VR Experience</h1>
+            <p>Immerse yourself in the breathtaking majesty of the world's largest religious monument through virtual reality</p>
+        </div>
+        
+        <!-- Enhanced VR Launch Section -->
+        <div class="vr-launch-section">
+            <div class="vr-launch-content">
+                <div class="vr-instructions">
+                    <h2>Step Into Ancient Cambodia</h2>
+                    <p>Experience the grandeur of Angkor Wat in stunning virtual reality. Walk through the temple complex, examine the intricate bas-reliefs, and witness the architectural marvel as if you were standing in the heart of the Khmer Empire.</p>
+                </div>
+                
+                <button class="vr-button" onclick="launchVRExperience()">
+                    <i class="fas fa-vr-cardboard"></i> Launch VR Experience
+                </button>
+                
+                <div class="vr-device-support">
+                    <div class="vr-device">
+                        <i class="fas fa-mobile-alt"></i> Smartphones
+                    </div>
+                    <div class="vr-device">
+                        <i class="fas fa-desktop"></i> Desktop
+                    </div>
+                    <div class="vr-device">
+                        <i class="fas fa-vr-cardboard"></i> VR Headsets
+                    </div>
+                </div>
+                
+                <p style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem;">
+                    For best experience, use Chrome, Firefox or Edge on a WebXR compatible device
+                </p>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <h2>About Angkor Wat</h2>
+            <img src="angkor2.png" alt="Angkor Wat" class="angkor-image">
+            
+            <div class="info-content">
+                <p>Angkor Wat is a temple complex in Cambodia and the largest religious monument in the world by land area, with its site measuring 162.6 hectares. Originally constructed as a Hindu temple dedicated to the god Vishnu for the Khmer Empire, it was gradually transformed into a Buddhist temple towards the end of the 12th century.</p>
+                
+                <div class="info-highlights">
+                    <h3>Key Information</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> <strong>Location:</strong> Siem Reap, Cambodia</li>
+                        <li><i class="fas fa-calendar-alt"></i> <strong>Built:</strong> Early 12th century</li>
+                        <li><i class="fas fa-archway"></i> <strong>Architectural Style:</strong> Khmer (Dravidian)</li>
+                        <li><i class="fas fa-arrows-alt"></i> <strong>Area:</strong> 162.6 hectares (1,626,000 m²)</li>
+                        <li><i class="fas fa-landmark"></i> <strong>UNESCO:</strong> World Heritage Site since 1992</li>
+                    </ul>
+                </div>
+                
+                <!-- <h2>VR Experience Features</h2>
+                <div class="vr-features">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-temple"></i>
+                        </div>
+                        <h3>Full Temple Exploration</h3>
+                        <p>Walk freely through the entire complex, from the outer galleries to the central sanctuary, experiencing the space as if you were physically present.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-expand"></i>
+                        </div>
+                        <h3>360° Panoramic Views</h3>
+                        <p>Look in any direction to admire the temple's architecture, including the iconic five towers that represent Mount Meru.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-search-plus"></i>
+                        </div>
+                        <h3>Detailed Bas-Reliefs</h3>
+                        <p>Examine the intricate carvings up close, including the famous Churning of the Ocean of Milk gallery.</p>
+                    </div>
+                     -->
+                    <!-- <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <h3>Historical Reconstruction</h3>
+                        <p>Toggle between the temple's current state and how it would have looked in its 12th century heyday.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-sun"></i>
+                        </div>
+                        <h3>Sunrise/Sunset Views</h3>
+                        <p>Experience the magical play of light during sunrise and sunset over the temple complex.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <h3>Interactive Guide</h3>
+                        <p>Access detailed information about architectural features and historical context by selecting points of interest.</p>
+                    </div>
+                </div> -->
+                
+                <h3>Architectural Marvel</h3>
+                <p>Angkor Wat combines two basic plans of Khmer temple architecture: the temple-mountain and the later galleried temple. It is designed to represent Mount Meru, home of the devas in Hindu mythology. The central quincunx of towers symbolizes the five peaks of the mountain, and the walls and moat symbolize the surrounding mountain ranges and ocean.</p>
+                
+                <h3>Historical Significance</h3>
+                <p>Angkor Wat was built by the Khmer King Suryavarman II in the early 12th century in Yaśodharapura (present-day Angkor), the capital of the Khmer Empire, as his state temple and eventual mausoleum. Breaking from the Shaiva tradition of previous kings, Angkor Wat was instead dedicated to Vishnu.</p>
+                
+                <h3>Artistic Significance</h3>
+                <p>The temple is admired for the grandeur and harmony of its architecture, its extensive bas-reliefs, and for the numerous devatas (guardian spirits) adorning its walls. The modern name, Angkor Wat, means "Temple City" or "City of Temples" in Khmer. Angkor means "city" or "capital city", and Wat is the Khmer word for "temple grounds".</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+        <p>© 2025 Safar - VR Travel Experiences. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // Check if user is logged in
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!email) {
+            window.location.href = '/login';
+        }
+        
+        // Enhanced VR experience launch with device detection
+        function launchVRExperience() {
+            if (navigator.xr) {
+                navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
+                    if (supported) {
+                        // Full VR experience available
+                        window.location.href = 'angkor_vrlaunch?mode=vr';
+                    } else {
+                        // Fallback to 360° view
+                        if (confirm('Your device doesn\'t support full VR. Would you like to experience a 360° view instead?')) {
+                            window.location.href = 'angkor_vrlaunch?mode=360';
+                        }
+                    }
+                });
+            } else {
+                // No WebXR support at all
+                if (confirm('Your browser doesn\'t support WebXR. Would you like to try a basic 360° view?')) {
+                    window.location.href = 'angkor_vrlaunch?mode=360';
+                }
+            }
+        }
+        
+        // Show device compatibility info
+        function showDeviceInfo() {
+            const info = {
+                isMobile: /Mobi|Android/i.test(navigator.userAgent),
+                isIOS: /iPad|iPhone|iPod/.test(navigator.userAgent),
+                isAndroid: /Android/.test(navigator.userAgent),
+                hasWebXR: !!navigator.xr
+            };
+            
+            console.log('Device Info:', info);
+        }
+        
+        // Check on page load
+        window.addEventListener('load', showDeviceInfo);
+    </script>
+</body>
+</html>

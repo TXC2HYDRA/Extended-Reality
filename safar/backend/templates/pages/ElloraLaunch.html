@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Virtual Tour - Ellora Caves</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.134/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.134/examples/js/controls/OrbitControls.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    h1 {
+      margin-top: 10px;
+      color: #333;
+      position: absolute;
+      top: 10px;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 10px;
+      margin: 0;
+    }
+
+    #scene-container {
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+
+    #info-box {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.8);
+      padding: 10px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      max-width: 80%;
+      z-index: 100;
+    }
+
+    #control-buttons {
+      position: absolute;
+      top: 70px;
+      right: 20px;
+      display: grid;
+      gap: 10px;
+      z-index: 100;
+    }
+
+    .control-button {
+      padding: 8px 12px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background 0.3s;
+    }
+
+    .control-button:hover {
+      background: #0056b3;
+    }
+
+    #audio-control {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 100;
+    }
+
+    #audio-button {
+      padding: 10px 20px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    #audio-button:hover {
+      background: #218838;
+    }
+
+    @media (max-width: 768px) {
+      #control-buttons {
+        top: auto;
+        bottom: 80px;
+        right: 10px;
+      }
+      
+      .control-button {
+        padding: 6px 10px;
+        font-size: 10px;
+      }
+      
+      #audio-button {
+        padding: 8px 15px;
+        font-size: 14px;
+      }
+    }
+
+    #bgVideo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  opacity: 0.75; /* Adjust opacity as needed */
+}
+  </style>
+</head>
+<body>
+
+  <video autoplay muted loop id="bgVideo">
+    <source src="{{ url_for('static', filename='Videos/Ellora.mp4') }}" type="video/mp4">
+    Your browser does not support HTML5 video.
+  </video>
+
+
+  <h1>Virtual Tour - Ellora Caves</h1>
+  <div id="scene-container"></div>
+  <div id="info-box">
+    <h2>Ellora Caves</h2>
+    <p>The Ellora Caves, a UNESCO World Heritage Site, feature Buddhist, Hindu, and Jain rock-cut monuments dating from 600-1000 CE.</p>
+  </div>
+  <div id="control-buttons">
+    <button class="control-button" id="move-up">Move Up</button>
+    <button class="control-button" id="move-down">Move Down</button>
+    <button class="control-button" id="rotate-left">Rotate Left</button>
+    <button class="control-button" id="rotate-right">Rotate Right</button>
+    <button class="control-button" id="scale-up">Scale Up</button>
+    <button class="control-button" id="scale-down">Scale Down</button>
+  </div>
+  <div id="audio-control">
+    <button id="audio-button">Play Audio</button>
+  </div>
+
+  <script>
+    // Scene, Camera, and Renderer setup
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xf0f0f0);
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    document.getElementById("scene-container").appendChild(renderer.domElement);
+
+    // Improved OrbitControls
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.minDistance = 3;
+    controls.maxDistance = 15;
+    controls.maxPolarAngle = Math.PI * 0.9;
+
+    // Enhanced Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambientLight);
+    
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(5, 10, 7);
+    directionalLight.castShadow = true;
+    scene.add(directionalLight);
+
+    // Model loading with progress and error handling
+    let model;
+    const loader = new THREE.GLTFLoader();
+    const rotationSpeed = 0.05;
+    const scaleFactor = 0.1;
+
+    loader.load(
+      'static/models/ElloraCaves.glb',  // Changed model file
+      (gltf) => {
+        model = gltf.scene;
+        model.scale.set(0.05, 0.05, 0.05);
+        model.position.y = 0;
+        model.traverse((child) => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+        scene.add(model);
+      },
+      (xhr) => {
+        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+      },
+      (error) => {
+        console.error('Error loading model:', error);
+        // Add a fallback cube if model fails to load
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+        model = new THREE.Mesh(geometry, material);
+        scene.add(model);
+      }
+    );
+
+    // Set initial camera position
+    camera.position.set(0, 2, 8);
+    camera.lookAt(0, 0, 0);
+
+    // Control button event listeners
+    document.getElementById("move-up").addEventListener("click", () => camera.position.y += 0.5);
+    document.getElementById("move-down").addEventListener("click", () => camera.position.y -= 0.5);
+
+    document.getElementById("rotate-left").addEventListener("click", () => {
+      if (model) model.rotation.y -= rotationSpeed;
+    });
+
+    document.getElementById("rotate-right").addEventListener("click", () => {
+      if (model) model.rotation.y += rotationSpeed;
+    });
+
+    document.getElementById("scale-up").addEventListener("click", () => {
+      if (model) model.scale.multiplyScalar(1 + scaleFactor);
+    });
+
+    document.getElementById("scale-down").addEventListener("click", () => {
+      if (model) model.scale.multiplyScalar(1 - scaleFactor);
+    });
+
+    // Audio playback with improved handling
+    const audio = new Audio('static/audio/ElloraCaves.mp3');  // Changed audio file
+    const audioButton = document.getElementById("audio-button");
+    let audioPlaying = false;
+
+    audioButton.addEventListener("click", () => {
+      if (audioPlaying) {
+        audio.pause();
+        audioButton.textContent = "Play Audio";
+        audioPlaying = false;
+      } else {
+        audio.play()
+          .then(() => {
+            audioButton.textContent = "Pause Audio";
+            audioPlaying = true;
+          })
+          .catch(error => {
+            console.error("Audio playback failed:", error);
+            audioButton.textContent = "Playback Error";
+          });
+      }
+    });
+
+    audio.addEventListener("ended", () => {
+      audioButton.textContent = "Play Audio";
+      audioPlaying = false;
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>

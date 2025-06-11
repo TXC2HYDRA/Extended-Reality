@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Safar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Same CSS as your login page for consistency */
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo-container { display: flex; align-items: center; gap: 10px; }
+        .logo-img { height: 50px; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)); }
+        .site-name { font-size: 28px; font-weight: 700; color: white; }
+        .nav { display: flex; align-items: center; gap: 20px; }
+        .nav a {
+            text-decoration: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .nav a:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-3px); }
+        .nav a.active { background: #FF6B6B; }
+        .profile-icon {
+            font-size: 20px;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .profile-icon {
+            font-size: 20px;
+            color: white;}
+            
+        .profile-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .profile-container {
+            max-width: 600px;
+            margin: 120px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .profile-container h2 {
+            color: #182848;
+            margin-bottom: 20px;
+        }
+        .profile-container p {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #444;
+        }
+        .logout-btn {
+            padding: 12px 25px;
+            background: #FF6B6B;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        .logout-btn:hover {
+            background: #ff4c4c;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='safar-logo.png') }}" alt="Safar Logo" class="logo-img">
+            <span class="site-name">Safar</span>
+        </div>
+        <nav class="nav">
+            <!-- Home -->
+            <a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a>
+        
+            <!-- Destinations (logged-in vs logged-out) -->
+            <a href="{% if session.get('email') %}{{ url_for('destinationstwo') }}{% else %}{{ url_for('destinations') }}{% endif %}" 
+               class="{% if request.endpoint in ['destinations', 'destinationstwo'] %}active{% endif %}">
+                Destinations
+            </a>
+        
+            <!-- About -->
+            <a href="{{ url_for('about') }}" class="{% if request.endpoint == 'about' %}active{% endif %}">About</a>
+        
+            <!-- Login or Profile Icon -->
+            {% if session.get('email') %}
+                <a href="{{ url_for('profile') }}" class="{% if request.endpoint == 'profile' %}active{% endif %}" title="Profile">
+                    <i class="fas fa-user-circle profile-icon"></i>
+                </a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="{% if request.endpoint == 'login' %}active{% endif %}">Login</a>
+            {% endif %}
+        </nav>
+        
+    </header>
+
+    <div class="profile-container">
+        <h2>Your Profile</h2>
+        <p><strong>Full Name:</strong> {{ user.fullname }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Phone:</strong> {{ user.phone }}</p>
+        <form action="{{ url_for('logout') }}" method="GET">
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </div>
+</body>
+</html>
